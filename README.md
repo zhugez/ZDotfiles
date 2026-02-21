@@ -31,3 +31,17 @@ cd ~/dotfiles
 
 - Keep secrets/tokens out of this repo
 - Use local overrides for machine-specific credentials
+
+## Windows one-command setup (PowerShell)
+
+```powershell
+# backup current Windows Terminal settings
+./scripts/backup-wt-settings.ps1
+
+# apply repo settings (with backup + overwrite)
+./scripts/install.ps1 -Force
+```
+
+Options:
+- `-BackupOnly` : backup only, do not apply
+- `-Force` : overwrite destination settings.json after backup
