@@ -1,0 +1,41 @@
+{
+  "$schema": "https://aka.ms/terminal-profiles-schema",
+  "defaultProfile": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+  "copyOnSelect": false,
+  "copyFormatting": "none",
+  "useAcrylicInTabRow": true,
+  "alwaysShowTabs": true,
+  "profiles": {
+    "defaults": {
+      "font": {
+        "face": "JetBrainsMono Nerd Font",
+        "size": 11
+      },
+      "opacity": 92,
+      "useAcrylic": true
+    }
+  },
+  "schemes": [
+    {
+      "name": "Zhugez Dark",
+      "background": "#0B1020",
+      "foreground": "#E5E7EB",
+      "black": "#111827",
+      "red": "#EF4444",
+      "green": "#22C55E",
+      "yellow": "#EAB308",
+      "blue": "#3B82F6",
+      "purple": "#A855F7",
+      "cyan": "#06B6D4",
+      "white": "#D1D5DB",
+      "brightBlack": "#374151",
+      "brightRed": "#F87171",
+      "brightGreen": "#4ADE80",
+      "brightYellow": "#FACC15",
+      "brightBlue": "#60A5FA",
+      "brightPurple": "#C084FC",
+      "brightCyan": "#22D3EE",
+      "brightWhite": "#F9FAFB"
+    }
+  ]
+}

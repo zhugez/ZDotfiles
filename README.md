@@ -1,24 +1,33 @@
 # dotfiles
 
-Personal development environment configuration (shell, git, tmux, editor).
+Personal development environment configuration with cross-platform support.
 
-## Structure
+## Included
 
-- `zsh/.config/zsh/` — shell config
-- `git/.config/git/` — git config templates
-- `tmux/.config/tmux/` — tmux config
-- `nvim/.config/nvim/` — neovim config
-- `scripts/` — setup/install helpers
+- `zsh/.config/zsh/` — shell profile and aliases
+- `git/.config/git/` — git defaults + work/personal profile split
+- `tmux/.config/tmux/` — tmux setup
+- `nvim/.config/nvim/` — minimal Neovim defaults
+- `starship/.config/starship.toml` — prompt theme
+- `wezterm/.config/wezterm/` — WezTerm config
+- `windows-terminal/` — Windows Terminal settings/profile
+- `scripts/bootstrap.sh` — bootstrap via GNU stow
 
-## Quick start (GNU stow)
+## Quick Start
 
 ```bash
 sudo apt install stow   # or brew install stow
 cd ~/dotfiles
-stow zsh git tmux nvim
+./scripts/bootstrap.sh
 ```
 
-## Notes
+## Windows Terminal
 
-- Keep machine-specific secrets out of this repository.
-- Use local overrides for private tokens/keys.
+- Import/merge `windows-terminal/settings.json` into:
+  - `%LOCALAPPDATA%/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json`
+- Font recommended: **JetBrainsMono Nerd Font**
+
+## Security Notes
+
+- Keep secrets/tokens out of this repo
+- Use local overrides for machine-specific credentials
