@@ -1,20 +1,40 @@
 # dotfiles
 
-Personal development environment configuration with cross-platform support.
+Personal development environment configuration for Windows and Unix.
 
-## Included
+## Windows quick start
 
-- `zsh/.config/zsh/` — shell profile and aliases
-- `git/.config/git/` — git defaults + work/personal profile split
-- `tmux/.config/tmux/` — tmux setup
-- `nvim/.config/nvim/` — minimal Neovim defaults
-- `starship/.config/starship.toml` — prompt theme
-- `wezterm/.config/wezterm/` — WezTerm config
-- `powershell/` — PowerShell 7 profile
-- `windows-terminal/` — Windows Terminal settings and Oh My Posh theme
-- `scripts/bootstrap.sh` — bootstrap via GNU stow
+Clone the repo, open a regular PowerShell window in the clone, and run:
 
-## Quick Start
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1
+```
+
+Use the same command with `-Plan` to see the package list without installing.
+The bootstrap works from Windows PowerShell 5.1. It uses WinGet if available,
+otherwise it uses Scoop and installs Scoop for the current user if needed.
+
+- Developer runtimes: Node.js LTS, Bun, pnpm, Rust stable, Go, Python, and uv.
+- Terminal and editor: PowerShell 7, Windows Terminal, Oh My Posh, a Nerd Font,
+  Neovim, Git, GitHub CLI, zoxide, fzf, ripgrep, fd, bat, and jq.
+- Yazi with file search, previews, and Git for Windows MIME detection.
+- Native stable-channel Herdr, the default multiplexer for this setup.
+- PowerShell modules: Terminal-Icons, PSFzf, and posh-git.
+
+The bootstrap skips tools already on PATH. The MSVC build tools and Windows SDK
+for Rust may take several minutes and Windows may prompt for elevation.
+Use `-SkipMsvc` if you manage that toolchain yourself. Some installers may ask
+for a restart. Rerun the same command if a package fails or after a required restart.
+
+The bootstrap backs up an existing PowerShell profile before replacing it. It
+merges the PowerShell entry and Zhugez color scheme into existing Windows
+Terminal settings, backing up the file when it changes. It installs the
+Neovim defaults when there is no existing Neovim init file.
+
+Open a new PowerShell 7 tab. Run `y` to browse files, then press `q` to return
+to PowerShell in the selected directory. Run `herdr` to open a multiplexer session.
+
+## Linux and macOS
 
 ```bash
 sudo apt install stow   # or brew install stow
@@ -22,30 +42,15 @@ cd ~/dotfiles
 ./scripts/bootstrap.sh
 ```
 
-## Windows Terminal
+This links the Zsh, Git, Neovim, Starship, and WezTerm configs and installs
+Herdr if missing. The legacy tmux config is still available for manual use.
 
-- Import/merge `windows-terminal/settings.json` into:
-  - `%LOCALAPPDATA%/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json`
-- The PowerShell 7 profile uses **GoogleSansCode NFM** for file and prompt icons. Install that font or choose another installed Nerd Font for the profile. Other profiles use the repo's **JetBrainsMono Nerd Font** default.
+## Advanced Windows setup
 
-## Security Notes
-
-- Keep secrets/tokens out of this repo
-- Use local overrides for machine-specific credentials
-
-## Windows one-command setup (PowerShell)
-
-```powershell
-# backup current Windows Terminal settings
-./scripts/backup-wt-settings.ps1
-
-# apply repo settings (with backup + overwrite)
-./scripts/install.ps1 -Force
-```
-
-Options:
-- `-BackupOnly` : backup only, do not apply
-- `-Force` : overwrite destination settings.json after backup
+Use `./scripts/install-powershell.ps1` for profile-only installation.
+Use `./scripts/backup-wt-settings.ps1` to back up the packaged Windows Terminal
+configuration. The older Terminal-only installer, `./scripts/install.ps1 -Force`,
+replaces Windows Terminal settings after making a backup.
 
 ## PowerShell 7
 
@@ -60,9 +65,12 @@ If a different profile already exists, review it first. Use `-Force` to replace 
 
 - `Tab` opens command and path completion. `↑` and `↓` search history by prefix, and PSReadLine shows inline predictions.
 - `Ctrl+R` searches history and `Ctrl+T` inserts a file path when both PSFzf and fzf are available.
+- `y` opens Yazi and carries the selected directory back to PowerShell.
 - `z` and `zi` jump to previously visited folders when zoxide is available.
 - `ls`, `dir`, and `ll` show icons when Terminal-Icons is available. `ll` also shows hidden entries.
 - `gst`, `gdiff`, and `glog` are Git shortcuts. Git completion uses posh-git on first use.
 - Oh My Posh uses the local M365Princess theme if present and falls back to the included Zhugez theme. Neovim becomes the default editor if installed and `EDITOR` is unset.
 
-Install only the optional tools you use. PowerShell 7 includes PSReadLine. The optional PowerShell modules are Terminal-Icons, PSFzf, and posh-git. The profile skips interactive setup for redirected sessions and scripts run with `-NonInteractive`.
+For a profile-only install, install only the optional tools you use. PowerShell 7 includes PSReadLine. The optional PowerShell modules are Terminal-Icons, PSFzf, and posh-git. The profile skips interactive setup for redirected sessions and scripts run with `-NonInteractive`.
+
+Keep secrets and tokens out of the repo. Use local overrides for machine-specific credentials.

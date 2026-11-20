@@ -35,6 +35,26 @@ if ((Get-Command git.exe -ErrorAction Ignore) -and (Get-Module -ListAvailable po
     }
 }
 
+function y {
+    $yazi = Get-Command yazi.exe -CommandType Application -ErrorAction SilentlyContinue
+    if (-not $yazi) {
+        Write-Error 'Yazi is missing. Run scripts/bootstrap.ps1 from ZDotfiles.'
+        return
+    }
+    $cwdFile = [IO.Path]::GetTempFileName()
+    try {
+        & $yazi.Source @args "--cwd-file=$cwdFile"
+        if ($LASTEXITCODE -eq 0) {
+            $cwd = [IO.File]::ReadAllText($cwdFile).TrimEnd([char]13, [char]10)
+            if ($cwd -and (Test-Path -LiteralPath $cwd -PathType Container)) {
+                Set-Location -LiteralPath $cwd
+            }
+        }
+    } finally {
+        [IO.File]::Delete($cwdFile)
+    }
+}
+
 function ll { Get-ChildItem -Force @args }
 function up { Set-Location .. }
 function gst { git status --short --branch @args }

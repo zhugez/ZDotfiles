@@ -6,6 +6,11 @@ if ! command -v stow >/dev/null 2>&1; then
   exit 1
 fi
 
-stow zsh git tmux nvim starship wezterm
+cd -- "$(dirname -- "$0")/.."
+stow --target="$HOME" zsh git nvim starship wezterm
 
-echo "Dotfiles linked successfully."
+if ! command -v herdr >/dev/null 2>&1; then
+  curl -fsSL https://herdr.dev/install.sh | sh
+fi
+
+echo "Dotfiles linked. Start a terminal session with herdr."
