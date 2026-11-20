@@ -34,6 +34,21 @@ Neovim defaults when there is no existing Neovim init file.
 Open a new PowerShell 7 tab. Run `y` to browse files, then press `q` to return
 to PowerShell in the selected directory. Run `herdr` to open a multiplexer session.
 
+### PowerShell updates
+
+For PowerShell installed with Scoop or WinGet MSIX, the bootstrap registers a
+weekly update task under your account. It runs while you are signed in. MSI
+installations stay on their release channel and use Microsoft Update when enabled.
+
+To update a Scoop or WinGet installation now, run:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\update-powershell.ps1
+```
+
+Run the same command with `-DisableAutomatic` to remove the ZDotfiles task. Use
+`-SkipPowerShellAutoUpdate` on the bootstrap to skip setting up the task.
+
 ## Linux and macOS
 
 ```bash
@@ -74,3 +89,4 @@ If a different profile already exists, review it first. Use `-Force` to replace 
 For a profile-only install, install only the optional tools you use. PowerShell 7 includes PSReadLine. The optional PowerShell modules are Terminal-Icons, PSFzf, and posh-git. The profile skips interactive setup for redirected sessions and scripts run with `-NonInteractive`.
 
 Keep secrets and tokens out of the repo. Use local overrides for machine-specific credentials.
+

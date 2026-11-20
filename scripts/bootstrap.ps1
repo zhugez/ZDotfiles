@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [switch]$Plan,
-    [switch]$SkipMsvc
+    [switch]$SkipMsvc,
+    [switch]$SkipPowerShellAutoUpdate
 )
 
 $ErrorActionPreference = 'Stop'
@@ -149,6 +150,7 @@ if ($Plan) {
     if (-not $SkipMsvc) { 'Install MSVC Build Tools if needed for Rust' }
     "Install PowerShell modules: $($manifest.Modules -join ', ')"
     'Configure PowerShell 7, Windows Terminal, Neovim and Yazi'
+    if (-not $SkipPowerShellAutoUpdate) { 'Configure automatic PowerShell 7 updates' }
     return
 }
 
@@ -230,5 +232,9 @@ foreach ($tool in 'pwsh.exe', 'yazi.exe', 'herdr.exe') {
 }
 Invoke-Checked 'pwsh.exe' @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
     '-File', (Join-Path $PSScriptRoot 'configure-windows.ps1'), '-TerminalSettingsPath', $terminalPath, '-Font', $font)
+if (-not $SkipPowerShellAutoUpdate) {
+    & (Join-Path $PSScriptRoot 'update-powershell.ps1') -EnableAutomatic
+}
 Write-Host 'Setup complete. Open a new PowerShell tab. Run y for Yazi or herdr for a terminal session.'
+
 
