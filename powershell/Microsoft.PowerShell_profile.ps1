@@ -73,6 +73,12 @@ if ((Get-Command oh-my-posh.exe -ErrorAction Ignore) -and (Test-Path -LiteralPat
     oh-my-posh.exe init pwsh --config $poshTheme | Invoke-Expression
 }
 
-if (Get-Command zoxide.exe -ErrorAction Ignore) {
-    zoxide.exe init powershell | Out-String | Invoke-Expression
+$zoxideCommand = Get-Command zoxide.exe -CommandType Application -ErrorAction Ignore | Select-Object -First 1
+if ($zoxideCommand) {
+    $zoxideInit = & $zoxideCommand.Source init powershell | Out-String
+    if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($zoxideInit)) {
+        Invoke-Expression $zoxideInit
+    } else {
+        Write-Warning 'zoxide did not initialize. Run zoxide.exe --version to check the installation.'
+    }
 }
