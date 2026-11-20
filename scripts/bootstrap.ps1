@@ -38,6 +38,10 @@ function Find-Tool {
     if ($Name -in @('wt.exe', 'python.exe')) {
         $commands = $commands | Where-Object Source -notlike '*\Microsoft\WindowsApps\*'
     }
+    if ($Name -in @('fd.exe', 'rg.exe')) {
+        # Agent-bundled copies are not managed as standalone dev tools.
+        $commands = $commands | Where-Object Source -notmatch '\\(?:\.codex\\packages|\.pi\\agent\\bin)\\'
+    }
     $commands | Select-Object -First 1
 }
 
@@ -112,6 +116,21 @@ function Install-MsvcTools {
     }
 }
 
+function Get-ActiveRustToolchain {
+    foreach ($name in 'CARGO_HOME', 'RUSTUP_HOME') {
+        if (-not [Environment]::GetEnvironmentVariable($name)) {
+            $value = [Environment]::GetEnvironmentVariable($name, 'User')
+            if ($value) { [Environment]::SetEnvironmentVariable($name, $value, 'Process') }
+        }
+    }
+    if (Find-Tool 'rustup.exe') {
+        # Windows PowerShell treats redirected native stderr as a PowerShell error.
+        $ErrorActionPreference = 'Continue'
+        $toolchain = & rustup.exe show active-toolchain 2>&1
+        if ($LASTEXITCODE -eq 0) { $toolchain }
+    }
+}
+
 Update-ProcessPath
 $useWinget = $false
 if (Get-Command winget.exe -ErrorAction SilentlyContinue) {
@@ -151,15 +170,14 @@ Add-SevenZipToPath
 
 foreach ($package in $manifest.Packages) {
     if ($package.Command -eq 'rustup.exe' -and -not $SkipMsvc) {
-        $activeRust = if (Find-Tool 'rustup.exe') { & rustup.exe show active-toolchain 2>$null }
+        $activeRust = Get-ActiveRustToolchain
         if ($activeRust -notmatch '-gnu(?:\s|$)') { Install-MsvcTools }
     }
     Install-DevPackage $package
     if ($package.Command -eq '7z.exe') { Add-SevenZipToPath }
 }
 if (-not (Find-Tool 'rustup.exe')) { throw 'Rustup is not on PATH after installation.' }
-& rustup.exe show active-toolchain *> $null
-if ($LASTEXITCODE -ne 0) { Invoke-Checked 'rustup.exe' @('default', 'stable') }
+if (-not (Get-ActiveRustToolchain)) { Invoke-Checked 'rustup.exe' @('default', 'stable') }
 
 if (-not (Find-Tool 'herdr.exe')) {
     Write-Host 'Installing stable Herdr.'
@@ -194,7 +212,7 @@ $gitExecPath = & git.exe --exec-path
 if ($LASTEXITCODE -ne 0) { throw 'Could not find the Git for Windows installation.' }
 $fileOne = [IO.Path]::GetFullPath((Join-Path $gitExecPath '../../../usr/bin/file.exe'))
 if (-not (Test-Path -LiteralPath $fileOne)) { throw "Could not find Git for Windows file.exe at $fileOne" }
-if (-not (Test-Path -LiteralPath ([string]$env:YAZI_FILE_ONE))) {
+if (-not $env:YAZI_FILE_ONE -or -not (Test-Path -LiteralPath $env:YAZI_FILE_ONE)) {
     [Environment]::SetEnvironmentVariable('YAZI_FILE_ONE', $fileOne, 'User')
     $env:YAZI_FILE_ONE = $fileOne
 }
