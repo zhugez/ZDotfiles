@@ -16,12 +16,12 @@ if ($DisableAutomatic) {
     return
 }
 
-$pwsh = Get-Command pwsh.exe -CommandType Application -ErrorAction Stop
+$pwsh = Get-Command pwsh.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1
 $installDirectory = & $pwsh.Source -NoProfile -NonInteractive -Command '$PSHOME'
 if ($LASTEXITCODE -or -not $installDirectory) { throw 'Could not identify the active PowerShell 7 installation.' }
 
 $scoop = Get-Command scoop -CommandType ExternalScript,Application -ErrorAction SilentlyContinue | Select-Object -First 1
-$winget = Get-Command winget.exe -CommandType Application -ErrorAction SilentlyContinue
+$winget = Get-Command winget.exe -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
 $coreRegistry = 'HKLM:\SOFTWARE\Microsoft\PowerShellCore'
 $msi = Get-ChildItem -LiteralPath "$coreRegistry\InstalledVersions" -ErrorAction SilentlyContinue | ForEach-Object {
     Get-ItemProperty -LiteralPath $_.PSPath
