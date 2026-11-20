@@ -69,6 +69,12 @@ function Install-DevPackage {
     if ($useWinget) {
         Invoke-Checked 'winget.exe' @('install', '--id', $Package.Winget, '--exact', '--source', 'winget',
             '--silent', '--disable-interactivity', '--accept-package-agreements', '--accept-source-agreements')
+    } elseif ($Package.Scoop -eq 'bun' -and (Test-Path -LiteralPath (Join-Path $HOME '.bun') -PathType Container)) {
+        # Keep existing Bun data in place when restoring a missing executable.
+        Invoke-DownloadedInstaller 'https://bun.com/install.ps1' 'ps1' {
+            param($path)
+            Invoke-Checked 'powershell.exe' @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', $path)
+        }
     } else {
         if ($Package.Scoop -match '^([^/]+)/') { Add-ScoopBucket $Matches[1] }
         Invoke-Checked 'scoop' @('install', $Package.Scoop)
@@ -207,3 +213,4 @@ foreach ($tool in 'pwsh.exe', 'yazi.exe', 'herdr.exe') {
 Invoke-Checked 'pwsh.exe' @('-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
     '-File', (Join-Path $PSScriptRoot 'configure-windows.ps1'), '-TerminalSettingsPath', $terminalPath, '-Font', $font)
 Write-Host 'Setup complete. Open a new PowerShell tab. Run y for Yazi or herdr for a terminal session.'
+
